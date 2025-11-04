@@ -1,12 +1,31 @@
-use base64::engine::general_purpose;
-use base64::Engine;
-use image::DynamicImage;
-use image::codecs;
-use image::{ImageBuffer, Rgb};
-use imageproc::drawing::{draw_cubic_bezier_curve_mut, draw_hollow_ellipse_mut, draw_text_mut};
-use rand::{rng, Rng};
-use ab_glyph::{FontVec, PxScale};
-use std::io::Cursor;
+use base64::{
+    engine::general_purpose,
+    Engine,
+};
+use image::{
+    codecs,
+    DynamicImage,
+    ImageBuffer,
+    Rgb,
+};
+use imageproc::drawing::{
+    draw_cubic_bezier_curve_mut,
+    draw_hollow_ellipse_mut,
+    draw_text_mut,
+};
+use rand::{
+    rng,
+    Rng,
+};
+use ab_glyph::{
+    FontVec,
+    PxScale,
+};
+use std::{
+    io::Cursor,
+    fs::File,
+    path::Path,
+};
 
 // Define the verification code characters.
 // Remove 0, O, I, L and other easily confusing letters
@@ -197,4 +216,14 @@ pub fn to_base64_str(image: &DynamicImage, compression: u8) -> String {
     image.write_with_encoder(jpeg_encoder).unwrap();
      let res_base64 = general_purpose::STANDARD.encode(buf.into_inner());
     format!("data:image/jpeg;base64,{}", res_base64)
+}
+
+/**
+ * Convert image to JPEG 
+ * parma image - Image
+ */
+ pub fn save_to<P: AsRef<Path>>(image: &DynamicImage, compression: u8, path: P) {
+    let mut buf = File::create(path).expect("Failed to create `BufWriter` of `File`");
+    let jpeg_encoder = codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, compression);
+    image.write_with_encoder(jpeg_encoder).unwrap();
 }

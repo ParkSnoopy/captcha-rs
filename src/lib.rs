@@ -18,17 +18,35 @@
 //! let base_img = captcha.to_base64();
 //! println!("base_img: {}", base_img);
 //! ```
-use image::DynamicImage;
-use imageproc::noise::{gaussian_noise_mut, salt_and_pepper_noise_mut};
-use rand::Rng;
+use std::{
+    path::Path,
+};
+
+use image::{
+    DynamicImage,
+};
+use imageproc::{
+    noise::{
+        gaussian_noise_mut,
+        salt_and_pepper_noise_mut,
+    },
+};
+use rand::{
+    Rng,
+};
 
 use crate::captcha::{
-    cyclic_write_character, draw_interference_ellipse, draw_interference_line, get_image,
+    cyclic_write_character,
+    draw_interference_ellipse,
+    draw_interference_line,
+    get_image,
     to_base64_str,
+    save_to,
 };
 
 mod captcha;
 
+#[derive(Debug)]
 pub struct Captcha {
     pub text: String,
     pub image: DynamicImage, // DynamicImage::ImageRgb8
@@ -39,6 +57,10 @@ pub struct Captcha {
 impl Captcha {
     pub fn to_base64(&self) -> String {
         to_base64_str(&self.image, self.compression)
+    }
+
+    pub fn save<P: AsRef<Path>>(&self, path: P) {
+        save_to(&self.image, self.compression, path);
     }
 }
 
