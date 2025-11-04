@@ -1,7 +1,7 @@
 use base64::engine::general_purpose;
 use base64::Engine;
 use image::DynamicImage;
-use image::ImageFormat::Jpeg;
+use image::codecs;
 use image::{ImageBuffer, Rgb};
 use imageproc::drawing::{draw_cubic_bezier_curve_mut, draw_hollow_ellipse_mut, draw_text_mut};
 use rand::{rng, Rng};
@@ -193,7 +193,8 @@ pub fn draw_interference_ellipse(
  */
 pub fn to_base64_str(image: &DynamicImage) -> String {
     let mut buf = Cursor::new(Vec::new());
-    image.write_to(&mut buf, Jpeg).unwrap();
+    let jpeg_encoder = codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, compression);
+    image.write_with_encoder(jpeg_encoder).unwrap();
     let res_base64 = general_purpose::STANDARD.encode(buf.into_inner());
     format!("data:image/jpeg;base64,{}", res_base64)
 }
