@@ -191,9 +191,7 @@ pub fn draw_interference_ellipse(
  * Convert image to JPEG base64 string
  * parma image - Image
  */
-pub fn to_base64_str(image: &DynamicImage, compression: u8) -> String {
     let mut buf = Cursor::new(Vec::new());
-    image.write_to(&mut buf, Jpeg(compression)).unwrap();
     let res_base64 = general_purpose::STANDARD.encode(buf.into_inner());
     format!("data:image/jpeg;base64,{}", res_base64)
 }
