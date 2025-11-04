@@ -1,11 +1,11 @@
 use base64::engine::general_purpose;
 use base64::Engine;
 use image::DynamicImage;
-use image::ImageOutputFormat::Jpeg;
+use image::ImageFormat::Jpeg;
 use image::{ImageBuffer, Rgb};
 use imageproc::drawing::{draw_cubic_bezier_curve_mut, draw_hollow_ellipse_mut, draw_text_mut};
-use rand::{thread_rng, Rng};
-use rusttype::{Font, Scale};
+use rand::{rng, Rng};
+use ab_glyph::{FontVec, PxScale};
 use std::io::Cursor;
 
 // Define the verification code characters.
@@ -38,17 +38,17 @@ pub const LIGHT: [u8; 3] = [224, 238, 253];
 pub const DARK: [u8; 3] = [18, 18, 18];
 
 // Define font size
-pub const SCALE_SM: Scale = Scale { x: 38.0, y: 35.0 };
-pub const SCALE_MD: Scale = Scale { x: 45.0, y: 42.0 };
-pub const SCALE_LG: Scale = Scale { x: 53.0, y: 50.0 };
+pub const SCALE_SM: PxScale = PxScale { x: 38.0, y: 35.0 };
+pub const SCALE_MD: PxScale = PxScale { x: 45.0, y: 42.0 };
+pub const SCALE_LG: PxScale = PxScale { x: 53.0, y: 50.0 };
 
 /***
  * Generate random numbers
  * params num - maximum random number
  */
 pub fn get_rnd(num: usize) -> usize {
-    let mut rng = thread_rng();
-    rng.gen_range(0..=num)
+    let mut rng = rng();
+    rng.random_range(0..=num)
 }
 
 /**
@@ -88,9 +88,9 @@ pub fn get_next(min: f32, max: u32) -> f32 {
 /**
  * Get font
  */
-pub fn get_font() -> Font<'static> {
+pub fn get_font() -> FontVec {
     let font = Vec::from(include_bytes!("../../fonts/arial.ttf") as &[u8]);
-    Font::try_from_vec(font).unwrap()
+    FontVec::try_from_vec(font).unwrap()
 }
 
 /**
@@ -191,7 +191,9 @@ pub fn draw_interference_ellipse(
  * Convert image to JPEG base64 string
  * parma image - Image
  */
+pub fn to_base64_str(image: &DynamicImage) -> String {
     let mut buf = Cursor::new(Vec::new());
+    image.write_to(&mut buf, Jpeg).unwrap();
     let res_base64 = general_purpose::STANDARD.encode(buf.into_inner());
     format!("data:image/jpeg;base64,{}", res_base64)
 }
