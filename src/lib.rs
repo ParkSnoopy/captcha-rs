@@ -5,7 +5,8 @@
 //! ```rust
 //! use captcha_rs::{CaptchaBuilder};
 //!
-//! let captcha = CaptchaBuilder::new()
+//! let mut captcha_builder = CaptchaBuilder::new();
+//! let captcha = captcha_builder
 //!     .length(5)
 //!     .width(130)
 //!     .height(40)
@@ -60,34 +61,34 @@ impl CaptchaBuilder {
         }
     }
 
-    pub fn text(mut self, text: String) -> Self {
+    pub fn text(&mut self, text: String) -> &mut Self {
         self.text = Some(text);
         self
     }
 
-    pub fn length(mut self, length: usize) -> Self {
+    pub fn length(&mut self, length: usize) -> &mut Self {
         // Generate an array of captcha characters
         let res = captcha::get_captcha(length);
         self.text = Some(res.join(""));
         self
     }
 
-    pub fn width(mut self, width: u32) -> Self {
+    pub fn width(&mut self, width: u32) -> &mut Self {
         self.width = Some(width);
         self
     }
 
-    pub fn height(mut self, height: u32) -> Self {
+    pub fn height(&mut self, height: u32) -> &mut Self {
         self.height = Some(height);
         self
     }
 
-    pub fn dark_mode(mut self, dark_mode: bool) -> Self {
+    pub fn dark_mode(&mut self, dark_mode: bool) -> &mut Self {
         self.dark_mode = Some(dark_mode);
         self
     }
 
-    pub fn complexity(mut self, complexity: u32) -> Self {
+    pub fn complexity(&mut self, complexity: u32) -> &mut Self {
         let mut complexity = complexity;
 
         if complexity > 10 {
@@ -102,8 +103,8 @@ impl CaptchaBuilder {
         self
     }
 
-    pub fn build(self) -> Captcha {
-        let text = self.text.unwrap_or(captcha::get_captcha(5).join(""));
+    pub fn build(&self) -> Captcha {
+        let text = self.text.clone().unwrap_or(captcha::get_captcha(5).join(""));
         let width = self.width.unwrap_or(130);
         let height = self.height.unwrap_or(40);
         let dark_mode = self.dark_mode.unwrap_or(false);
@@ -179,7 +180,8 @@ mod tests {
     #[test]
     fn it_generates_captcha_using_builder() {
         let start = std::time::Instant::now();
-        let captcha = CaptchaBuilder::new()
+        let mut captcha_builder = CaptchaBuilder::new();
+        let captcha = captcha_builder
             .length(5)
             .width(200)
             .height(70)
