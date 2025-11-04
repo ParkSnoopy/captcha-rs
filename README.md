@@ -1,3 +1,8 @@
+### Reminder
+`main` branch is not compatible with upstream.  
+`contribute` is compatible with upstream.  
+
+---
 # captcha-rs
 
 [![Captcha-rs crate](https://img.shields.io/crates/v/captcha-rs.svg?style=flat&logo=appveyor)](https://crates.io/crates/captcha-rs)
