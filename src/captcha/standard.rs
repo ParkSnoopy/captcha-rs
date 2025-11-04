@@ -6,6 +6,7 @@ use image::{
     codecs,
     DynamicImage,
     ImageBuffer,
+    ImageFormat,
     Rgb,
 };
 use imageproc::drawing::{
@@ -218,12 +219,14 @@ pub fn to_base64_str(image: &DynamicImage, compression: u8) -> String {
     format!("data:image/jpeg;base64,{}", res_base64)
 }
 
-/**
- * Convert image to JPEG 
- * parma image - Image
- */
- pub fn save_to<P: AsRef<Path>>(image: &DynamicImage, compression: u8, path: P) {
-    let mut buf = File::create(path).expect("Failed to create `BufWriter` of `File`");
-    let jpeg_encoder = codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, compression);
-    image.write_with_encoder(jpeg_encoder).unwrap();
+// Save to `path`, 
+pub fn save_to<P: AsRef<Path>>(image: &DynamicImage, compression: u8, path: P) {
+    let mut buf = File::create(&path).expect("Failed to create `BufWriter` of `File`");
+    let format = ImageFormat::from_path(&path).expect("Failed to assume format from `path`");
+    if format == ImageFormat::Jpeg {
+        let jpeg_encoder = codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, compression);
+        image.write_with_encoder(jpeg_encoder).unwrap();
+    } else {
+        image.write_to(&mut buf, format).unwrap();
+    }
 }
