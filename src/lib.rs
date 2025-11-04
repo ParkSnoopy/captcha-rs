@@ -31,7 +31,7 @@ mod captcha;
 
 pub struct Captcha {
     pub text: String,
-    pub image: DynamicImage,
+    pub image: DynamicImage, // DynamicImage::ImageRgb8
     pub compression: u8,
     pub dark_mode: bool,
 }
