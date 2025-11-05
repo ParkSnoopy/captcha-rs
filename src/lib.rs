@@ -59,7 +59,7 @@ impl Captcha {
         to_base64_str(&self.image, self.compression)
     }
 
-    pub fn save<P: AsRef<Path> + ToString>(&self, path: P) {
+    pub fn save<P: AsRef<Path>>(&self, path: P) {
         save_to(&self.image, self.compression, path);
     }
 }
@@ -185,15 +185,11 @@ mod tests {
 
     #[test]
     fn it_generates_a_captcha() {
-        let _dark_mode = false;
-        let _text_length = 5;
-        let _width = 130;
-        let _height = 40;
-
         let start = std::time::Instant::now();
 
         let captcha = CaptchaBuilder::new()
             .text(String::from("based"))
+            .length(5)
             .width(200)
             .height(70)
             .dark_mode(false)
@@ -212,6 +208,7 @@ mod tests {
     #[test]
     fn it_generates_captcha_using_builder() {
         let start = std::time::Instant::now();
+
         let captcha = CaptchaBuilder::new()
             .length(5)
             .width(200)
@@ -229,5 +226,30 @@ mod tests {
         assert!(base_img.starts_with("data:image/jpeg;base64,"));
         println!("text: {}", captcha.text);
         println!("base_img: {}", base_img);
+    }
+
+    #[test]
+    fn it_able_to_save_a_captcha() {
+        let start = std::time::Instant::now();
+
+        let captcha = CaptchaBuilder::new()
+            .length(5)
+            .width(200)
+            .height(70)
+            .dark_mode(false)
+            .complexity(5)
+            .compression(40)
+            .build();
+
+        let duration = start.elapsed();
+        println!("Time elapsed in generating captcha() is: {:?}", duration);
+
+        let path: std::path::PathBuf = {
+            let mut t = std::env::temp_dir();
+            t.push("captcha-rs-testfile.png");
+            t
+        };
+        captcha.save(&path);
+        println!("saved to: `{}`", path.display());
     }
 }

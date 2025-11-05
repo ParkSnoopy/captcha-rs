@@ -220,8 +220,8 @@ pub fn to_base64_str(image: &DynamicImage, compression: u8) -> String {
 }
 
 // Save to `path`, 
-pub fn save_to<P: AsRef<Path> + ToString>(image: &DynamicImage, compression: u8, path: P) {
-    let mut buf = File::create(&path).expect( format!("Failed to create `std::fs::File` on `{}`", path.to_string()).as_str() );
+pub fn save_to<P: AsRef<Path>>(image: &DynamicImage, compression: u8, path: P) {
+    let mut buf = File::create(&path).expect( format!("Failed to create `std::fs::File` on `{}`", path.as_ref().display()).as_ref() );
     let format = ImageFormat::from_path(&path).expect("Failed to assume format from `path`");
     if format == ImageFormat::Jpeg {
         let jpeg_encoder = codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, compression);
