@@ -59,7 +59,7 @@ impl Captcha {
         to_base64_str(&self.image, self.compression)
     }
 
-    pub fn save<P: AsRef<Path>>(&self, path: P) {
+    pub fn save<P: AsRef<Path> + std::fmt::Display>(&self, path: P) {
         save_to(&self.image, self.compression, path);
     }
 }
